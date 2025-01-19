@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-deploy
+  labels:
+    app: myapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      color: blue  # 나는 이러한 key: value 를 갖는 Pod 를 3개 유지할게!!! (controller가 담당)
+  template:       # 실제적인 Pod 의 구성 정보
+    metadata:
+      labels:
+        color: blue
+    spec:
+      containers:
+        - name: mydeploy-ctn
+          image: kingmusung/cjlab:blue
+          ports:
+          - containerPort: 80
+          resources:
+            limits:
+              memory: "64Mi"
+              cpu: "500m"
+            requests:
+              memory: "32Mi"
+              cpu: "250m"
