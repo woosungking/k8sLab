@@ -1,0 +1,65 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cj
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: cj
+  labels:
+    app: nginx
+spec:
+  replicas: 2  # 5개의 파드를 실행
+  selector:
+    matchLabels:
+      app: blue
+  template:     # Pod 정의 시작
+    metadata:
+      labels:
+        app: blue
+    spec:              # 컨테이너 정의
+      containers:
+      - name: nginx
+        image: nginx:latest  # nginx 이미지를 사용
+        ports:
+        - containerPort: 80  # Nginx의 기본 포트 80
+---
+apiVersion: app/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment2
+  namespace: cj
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: green
+  template:
+    metadata:
+      labels:
+        app: green
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: cj
+spec:
+  selector:
+    app: nginx    # “app: nginx” 레이블을 갖는 Pod에게 요청을 전달
+  ports:
+  - protocol: TCP
+    port: 80            # LoadBalancer의 포트
+    targetPort: 80      # Pod 내의 Nginx가 사용하는 포트
+  type: LoadBalancer      # LoadBalancer 유형으로 설정
